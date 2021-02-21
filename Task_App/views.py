@@ -64,19 +64,27 @@ class Dashboard(View):
 
         employee = Employee.objects.all()
         empPaginator = Paginator(employee, 5)
-        empPage = empPaginator.page(index)
+        try:
+            empPage = empPaginator.page(index)
+        except:
+            empPage = empPaginator.page(1)
+        
         return render(request, "Dashboard.html", context={"employees": empPage})
         
     @method_decorator(Login_required)
     def post(self, request, *args, **kwargs):
         try:
             message = ""
-            employee = Employee.objects.all()
-            empPaginator = Paginator(employee, 5)
-            empPage = empPaginator.page(request.POST["index"])
         
             empId = request.POST["empId"]
             Employee.objects.filter(id=empId).delete()
+            
+            employee = Employee.objects.all()
+            empPaginator = Paginator(employee, 5)
+            try:
+                empPage = empPaginator.page(request.POST["index"])
+            except:
+                empPage = empPaginator.page(1)
             return render(request, "Dashboard.html", context={"employees": empPage})
         except Exception as e:
             message = e
