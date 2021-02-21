@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <title>dashboard</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    
+    </head>
+    <body>
+        <!-- Navbar start here -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{% url "Dashboard" index=1 %}">MindBowser</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'CreateEmployee' %}">Create Employee <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <!-- Navbar ends here -->
+        <div style="margin: 5%">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Serial Number</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in employees %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter0|add:employees.start_index }}</th>
+                            <td>{{ emp.firstName }}</td>
+                            <td>{{ emp.lastName }}</td>
+                            <td>{{ emp.email }}</td>
+                            <td><button class="btn btn-primary" onclick="javascript: window.location.assign('{% url 'EditEmployee' empId=emp.id %}')">Edit</button></td>
+                            <td>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="empId" value="{{ emp.id }}">
+                                    <input type="hidden" name="index" value="{{ employees.number }}">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if employees.has_previous %}
+                        <li class="page-item"><a class="page-link" href="{% url "Dashboard" index=employees.previous_page_number %}">Previous</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link">Previous</a></li>
+                    {% endif %}
+                    <li class="page-item"><a class="page-link" href="#">{{ employees.number }}</a></li>
+                    {% if employees.has_next %}
+                        <li class="page-item"><a class="page-link" href="{% url "Dashboard" index=employees.next_page_number %}">Next</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </body>
+</html>
+
+<script>
+    {% if message %}
+        alert('{{ message }}');
+    {% endif %}
+</script>
